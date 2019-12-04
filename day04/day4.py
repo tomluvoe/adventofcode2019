@@ -15,26 +15,30 @@ def password_p1(key):
 def password_p2(key):
     keys = str(key)
     dbl = False
+    dbld = [-1,-1]
     dbln = -2
     for i in range(len(keys)-1):
         if keys[i] > keys[i+1]:
             return False
         if keys[i] == keys[i+1]:
-            if dbl > i-2:
-                dbl = i
-                dbl = False
+            if dbln == i-1:
+                if dbld[0] == keys[i] and dbld[1] == i-1:
+                    dbl = False
+                    dbld = [-1,-1]
             else:
-                dbl = True
+                if dbld[0] == -1 or dbld[1] == i-1:
+                    dbl = True
+                    dbld = [keys[i],i]
+            dbln = i
     return dbl
 
-def part1(data):
+def part12(data, fcn):
     pwd = 0
     x0,x1 = data.split('-')
-    for i in range(int(x1)-int(x0)):
-        if password_p1(i+int(x0)) == True:
+    for i in range(int(x1)-int(x0)+1):
+        if eval(fcn+"(i+int(x0)) == True"):
             pwd += 1
     return pwd
-
 
 def unit_test_p1():
     print("Unit test start:")
@@ -53,11 +57,13 @@ def unit_test_p2():
     print("Test 2 OK")
     assert password_p2(111122) == True
     print("Test 3 OK")
+    assert password_p2(112222) == True
+    print("Test 4 OK")
 
 print("** Part one")
 unit_test_p1()
-print("My solution is: ", part1(data), "\n")
+print("My solution is: ", part12(data, 'password_p1'), "\n")
 
 print("** Part two")
 unit_test_p2()
-print("My solution is: ", part1(data), "\n")
+print("My solution is: ", part12(data, 'password_p2'), "\n")
