@@ -8,7 +8,7 @@ data = ""
 with open(input_file, 'r') as input_file:
     data = input_file.read()[:-1]
 
-def step(dat,pc=0):
+def step(dat,pc=0,input=0):
     cmd = ['','+','*','storeinputataddr','outputaddr']
     instr = int(dat[pc])
     pm = '00'
@@ -31,7 +31,7 @@ def step(dat,pc=0):
         dat[dat[pc+3]] = eval(str(p1)+cmd[instr]+str(p2))
         pc += 4
     elif(instr == 3):
-        dat[dat[pc+1]] = 1
+        dat[dat[pc+1]] = input
         pc += 2
     elif(instr == 4):
         print(p1)
@@ -60,11 +60,12 @@ def step(dat,pc=0):
         pc += 4
     return dat,pc
 
-def part1(data, part1=0):
+def part1(data, input=0):
     dat = list(map(int, data.split(',')))
     pc = 0
     while dat[pc] != 99:
-        dat,pc = step(dat,pc)
+        dat,pc = step(dat,pc,input)
+        print(pc)
     return dat
 
 def unit_test_p1():
@@ -82,4 +83,4 @@ unit_test_p1()
 print("My solution is: ", part1(data,1)[0], "\n")
 
 print("** Part two")
-#print("My solution is: ", part1(data,1)[0], "\n")
+print("My solution is: ", part1(data,5)[0], "\n")
