@@ -49,21 +49,15 @@ class intcode():
             dat[dat[pc+3]] = eval(str(p1)+self.cmd_str[instr]+str(p2))
             pc += 4
         elif(instr == 3):
-            #if self.break_for_input:
-            #    self.state_wait = True
-            #    self.input_to = dat[pc+1]
-            #    return
             if type(self.input) == int:
                 dat[dat[pc+1]] = self.input
             else:
                 dat[dat[pc+1]] = self.input[self.ic]
                 self.ic = (self.ic + 1)%len(self.input)
-                #self.break_for_input = True
             pc += 2
         elif(instr == 4):
-            print(p1)
+            #print(p1)
             self.output.append(p1)
-            print ("-> break?",p1)
             self.state_wait = True
             pc += 2
         elif(instr == 5):
@@ -92,17 +86,14 @@ class intcode():
         self.pc = pc
 
     def run(self):
-        if self.state_wait:
-            self.data[self.input_to] = self.input
-            self.state_wait = False
-            self.break_for_input = True
+        self.state_wait = False
         while self.data[self.pc] != 99 and not self.state_wait:
             self.step()
         if self.data[self.pc] == 99:
             self.state_finish = True
 
 def test_day2_p1():
-    print("Unit test start:")
+    print("Unit test start day2:")
     ic = intcode("1,0,0,0,99",0)
     ic.run()
     assert ic.data == [2,0,0,0,99]
@@ -125,7 +116,7 @@ def test_day2_p1():
     print("Test 5 OK")
 
 def test_day5_p1():
-    print("Unit test start:")
+    print("Unit test start day5 p1:")
     ic = intcode("1002,4,3,4,33",0)
     ic.run()
     assert ic.data == [1002,4,3,4,99]
@@ -136,7 +127,7 @@ def test_day5_p1():
     print("Test 2 OK")
 
 def test_day5_p2():
-    print("Unit test start;")
+    print("Unit test start day5 p2;")
     test_data = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99"
     ic = intcode(test_data,1)
     ic.run()
@@ -156,12 +147,6 @@ def thrusters(data,phase):
     for a in range(5):
         amp = intcode(data,[phase[a],thrust])
         amp.run()
-        #amp.state()
-        #amp.input = thrust
-        #while not amp.state_finish:
-        #    amp.state_wait = False
-        #    amp.run()
-        #amp.state()
         thrust = amp.output[-1]
     return thrust
 
@@ -171,23 +156,16 @@ def thrusters_w_feedback(data,phase):
     for a in range(5):
         amps.append(intcode(data,[phase[a],thrust]))
         amps[a].run()
-        #print(a,amps[a].input)
         thrust = amps[a].output[-1]
-        #print('thrust amp',a,'loop 0 :',amps[a].state())
-    print('init done')
-    for l in range(10):
+    while not amps[4].state_finish:
         for a in range(5):
-            print('run again',a)
-            amps[a].state_wait = False
-            amps[a].input = [thrust,thrust]
-            #print(a,amps[a].input)
-            amps[a].run
+            amps[a].input = thrust
+            amps[a].run()
             thrust = amps[a].output[-1]
-            #print('thrust amp',a,'loop',l+1,':',amps[a].state())
     return thrust
 
 def test_day7_p1():
-    print("Unit test start;")
+    print("Unit test start day7 p1;")
     test_data = "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0"
     assert thrusters(test_data,[4,3,2,1,0]) == 43210
     print("Test 1 OK")
@@ -199,7 +177,7 @@ def test_day7_p1():
     print("Test 3 OK")
 
 def test_day7_p2():
-    print("Unit test start;")
+    print("Unit test start day7 p2;")
     test_data = "3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5"
     assert thrusters_w_feedback(test_data,[9,8,7,6,5]) == 139629729
     print("Test 1 OK")

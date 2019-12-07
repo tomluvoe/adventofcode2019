@@ -17,7 +17,18 @@ def part1(data, input=0):
             max_thrust = thrust
     return max_thrust
 
+def part2(data, input=0):
+    max_thrust = 0
+    for phase in list(itertools.permutations([5,6,7,8,9])):
+        thrust = intcode.thrusters_w_feedback(data,phase)
+        if thrust > max_thrust:
+            max_thrust = thrust
+    return max_thrust
+
 print("My data:\n", data, "\n")
 
 print("** Part one")
 print("My solution is: ", part1(data), "\n")
+
+print("** Part two")
+print("My solution is: ", part2(data), "\n")
