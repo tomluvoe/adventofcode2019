@@ -22,10 +22,8 @@ def part2(data,imgsize):
     for layer in range(len(data)//size):
         for pix in range(size):
             if result[pix] == '2':
-                #s[:index] + newstring + s[index + 1:]
                 result = result[:pix]+data[layer*size+pix]+result[pix+1:]
     for r in range(imgsize[1]):
-        #print(result[r*imgsize[0]:r*imgsize[0]+imgsize[0]])
         for pix in range(imgsize[0]):
             if result[r*imgsize[0]+pix] == '1':
                 print('1', end='')
