@@ -37,16 +37,10 @@ class intcode():
         pc = self.pc
 
         instr = int(self.data[pc])
-#        print(pc,instr,self.output,self.rb)
-        print(self.data)
-        print(pc,self.data[pc],instr,pm,self.data[pc+1],self.data[pc+2],len(self.data))
         if len(str(instr)) > 2:
             instr = int(str(self.data[pc])[-2:])
             pm = '00'+str(self.data[pc])[:-2]
         if pm[-1] == '0':
-#    test_data = "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99"
-# ABCDE: DE, params, C=first, B = second, A=third
-
             self.ext_data_buffer(self.data[pc+1])
             p1 = self.data[self.data[pc+1]]
         elif pm[-1] == '1':
@@ -72,6 +66,7 @@ class intcode():
         instr,p1,p2 = self.param_mode()
 
         if(instr < 3):
+            self.ext_data_buffer(dat[pc+3])
             dat[dat[pc+3]] = eval(str(p1)+self.cmd_str[instr]+str(p2))
             pc += 4
         elif(instr == 3):
@@ -112,7 +107,7 @@ class intcode():
                 dat[dat[pc+3]] = 0
             pc += 4
         elif(instr == 9):
-            self.rb = p1
+            self.rb = self.rb + p1
             pc += 2
         self.data = dat
         self.pc = pc
@@ -223,8 +218,7 @@ def test_day9_p1():
     ic = intcode(test_data,0)
     ic.state_wait_when_output = False
     ic.run()
-    print(ic.output)
-    assert ic.output == test_data
+    assert ic.output == [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99]
     print("Test 1 OK")
     test_data = "1102,34915192,34915192,7,4,7,99,0"
     ic = intcode(test_data,1)
@@ -237,9 +231,9 @@ def test_day9_p1():
     assert ic.output[0] == 1125899906842624
     print("Test 3 OK")
 
-#test_day2_p1()
-#test_day5_p1()
-#test_day5_p2()
-#test_day7_p1()
-#test_day7_p2()
-#test_day9_p1()
+test_day2_p1()
+test_day5_p1()
+test_day5_p2()
+test_day7_p1()
+test_day7_p2()
+test_day9_p1()
