@@ -9,8 +9,12 @@ with open(input_file, 'r') as input_file:
     data = input_file.read()[:-1]
 
 def part1(data):
-    ic = intcode.intcode(data,1)
-    ic.run()
+    ic = intcode.intcode(data,1,False)
+    while ic.state_finish == False:
+        #print('run')
+        ic.run()
+        ic.state()
+        #print(ic.data)
     return ic.output
 
 print("My data:\n", data, "\n")

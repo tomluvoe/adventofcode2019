@@ -4,14 +4,14 @@ class intcode():
 
     cmd_str = ['','+','*']
 
-    def __init__(self,data,input=0):
+    def __init__(self,data,input=0,state_wait=True):
         self.data = list(map(int, data.split(',')))
         self.input = input
         self.pc = 0
         self.rb = 0
         self.output = []
         self.state_wait = False
-        self.state_wait_when_output = True
+        self.state_wait_when_output = state_wait
         self.input_to = 0
         self.state_finish = False
         self.ic = 0
@@ -21,7 +21,7 @@ class intcode():
         print("->PC",self.pc)
         print("->SW",self.state_wait)
         print("->SWO",self.state_wait_when_output)
-        print("->SE",self.state_finish)
+        print("->SF",self.state_finish)
         print("->IN",self.input)
         print("->IT",self.input_to)
         print("->OUT",self.output)
@@ -57,6 +57,18 @@ class intcode():
             else:
                 self.ext_data_buffer(self.data[pc+2]+self.rb)
                 p2 = self.data[self.data[pc+2]+self.rb]
+        if instr == 3:
+            if pm[-1] == '0':
+                if type(self.input) == int:
+                    p1 = self.input
+            elif pm[-1] == '1':
+                if type(self.input) == int:
+                    p1 = self.input
+            else:
+                if type(self.input) == int:
+                    #TODO: CHANGE ADDR??
+                    self.ext_data_buffer(self.input+self.rb)
+                    p1 = self.data[self.input+self.rb]
         return instr,p1,p2
 
     def step(self):
@@ -72,7 +84,11 @@ class intcode():
         elif(instr == 3):
             self.ext_data_buffer(dat[pc+1])
             if type(self.input) == int:
-                dat[dat[pc+1]] = self.input
+                dat[dat[pc+1]] = p1
+                # TODO ISSUE?
+                if str(self.data[pc])[:-2] == '2':
+                    dat[dat[pc+1]+self.rb] = self.input
+                print(p1)
             else:
                 dat[dat[pc+1]] = self.input[self.ic]
                 self.ic = (self.ic + 1)%len(self.input)
@@ -107,7 +123,7 @@ class intcode():
                 dat[dat[pc+3]] = 0
             pc += 4
         elif(instr == 9):
-            self.rb = self.rb + p1
+            self.rb += p1
             pc += 2
         self.data = dat
         self.pc = pc
@@ -168,6 +184,24 @@ def test_day5_p2():
     ic.run()
     assert ic.output[-1] == 1001
     print("Test 3 OK")
+    test_data = "3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9"
+    ic = intcode(test_data,0)
+    ic.run()
+    assert ic.output[-1] == 0
+    print("Test 4 OK")
+    ic = intcode(test_data,7)
+    ic.run()
+    assert ic.output[-1] == 1
+    print("Test 5 OK")
+    test_data = "3,3,1105,-1,9,1101,0,0,12,4,12,99,1"
+    ic = intcode(test_data,0)
+    ic.run()
+    assert ic.output[-1] == 0
+    print("Test 6 OK")
+    ic = intcode(test_data,7)
+    ic.run()
+    assert ic.output[-1] == 1
+    print("Test 7 OK")
 
 def thrusters(data,phase):
     thrust = 0
