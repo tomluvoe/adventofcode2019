@@ -90,6 +90,10 @@ class intcode():
                 dat[dat[pc+1]] = p1
                 if str(self.data[pc])[:-2] == '2':
                     dat[dat[pc+1]+self.rb] = self.input
+<<<<<<< HEAD
+=======
+                #print(p1)
+>>>>>>> 7ccf61ceddd76894b30c69da291921970158d3b7
             else:
                 dat[dat[pc+1]] = self.input[self.ic]
                 self.ic = (self.ic + 1)%len(self.input)
