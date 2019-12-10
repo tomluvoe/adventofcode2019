@@ -76,19 +76,20 @@ class intcode():
         dat = self.data
 
         instr,p1,p2 = self.param_mode()
+        instr = int(str(self.data[pc])[-2:])
+        mode = '000'+str(self.data[pc])[:-2]
 
         if(instr < 3):
-            self.ext_data_buffer(dat[pc+3])
-            dat[dat[pc+3]] = eval(str(p1)+self.cmd_str[instr]+str(p2))
+            p3 = self.data[pc+3] if mode[-3] == '0' else pc+3 if mode[-3] == '1' else self.data[pc+3]+self.rb
+            self.ext_data_buffer(p3)
+            dat[p3] = eval(str(p1)+self.cmd_str[instr]+str(p2))
             pc += 4
         elif(instr == 3):
             self.ext_data_buffer(dat[pc+1])
             if type(self.input) == int:
                 dat[dat[pc+1]] = p1
-                # TODO ISSUE?
                 if str(self.data[pc])[:-2] == '2':
                     dat[dat[pc+1]+self.rb] = self.input
-                print(p1)
             else:
                 dat[dat[pc+1]] = self.input[self.ic]
                 self.ic = (self.ic + 1)%len(self.input)
@@ -109,18 +110,20 @@ class intcode():
             else:
                 pc += 3
         elif(instr == 7):
-            self.ext_data_buffer(dat[pc+3])
+            p3 = self.data[pc+3] if mode[-3] == '0' else pc+3 if mode[-3] == '1' else self.data[pc+3]+self.rb
+            self.ext_data_buffer(p3)
             if p1 < p2:
-                dat[dat[pc+3]] = 1
+                dat[p3] = 1
             else:
-                dat[dat[pc+3]] = 0
+                dat[p3] = 0
             pc += 4
         elif(instr == 8):
-            self.ext_data_buffer(dat[pc+3])
+            p3 = self.data[pc+3] if mode[-3] == '0' else pc+3 if mode[-3] == '1' else self.data[pc+3]+self.rb
+            self.ext_data_buffer(p3)
             if p1 == p2:
-                dat[dat[pc+3]] = 1
+                dat[p3] = 1
             else:
-                dat[dat[pc+3]] = 0
+                dat[p3] = 0
             pc += 4
         elif(instr == 9):
             self.rb += p1
@@ -151,6 +154,7 @@ def test_day2_p1():
     print("Test 3 OK")
     ic = intcode("1,1,1,4,99,5,6,0,99",0)
     ic.run()
+    print(ic.data)
     assert ic.data == [30,1,1,4,2,5,6,0,99]
     print("Test 4 OK")
     ic = intcode("1,9,10,3,2,3,11,0,99,30,40,50",0)
